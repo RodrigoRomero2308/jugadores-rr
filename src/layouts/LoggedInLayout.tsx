@@ -1,13 +1,18 @@
 import { useContext, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import FadeLoader from "react-spinners/FadeLoader";
+import Button from "../components/Buttons/Button";
+import Dropdown from "../components/Dropdowns/Dropdown";
+import { ContentText, TitleText } from "../components/Typography/Typography";
 import { appContext } from "../contexts/AppContext";
 import { useFirebaseUser } from "../hooks/useFirebaseUser";
+import UserService from "../services/UserService";
 
 export const LoggedInLayout = () => {
   const { user } = useContext(appContext);
   const navigate = useNavigate();
   const { checkedLoggedUser } = useFirebaseUser();
+  const { logout } = UserService();
 
   useEffect(() => {
     if (!user) {
@@ -17,8 +22,26 @@ export const LoggedInLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="flex-0 text-white bg-slate-500">
-        <h1 className="font-bold block text-xl p-4">JugadoresApp</h1>
+      <header className="flex p-1 sm:p-2 justify-between items-center text-white bg-slate-500">
+        <h1 className="font-bold block p-4">
+          <TitleText>JugadoresApp</TitleText>
+        </h1>
+        {user && (
+          <Dropdown
+            dropdownContent={
+              <div
+                onClick={logout}
+                className="bg-white text-slate-800 mt-1 p-2 rounded-md shadow-lg border cursor-pointer"
+              >
+                <ContentText>Logout</ContentText>
+              </div>
+            }
+          >
+            <Button>
+              <ContentText>{user.displayName}</ContentText>
+            </Button>
+          </Dropdown>
+        )}
       </header>
       <div className="flex-1">
         {checkedLoggedUser && <Outlet />}
